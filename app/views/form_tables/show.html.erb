@@ -1,0 +1,25 @@
+<div class="relative flex min-h-screen text-gray-800 antialiased flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12">
+  <div class="relative py-3 sm:w-2/3 w-full mx-auto text-center">
+    <div class="bg-white shadow-md rounded-lg text-left">
+      <div class="h-2 bg-green-400 rounded-t-md"></div>
+      <div class="px-8 py-6">
+        <% if notice.present? %>
+          <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+        <% end %>
+
+        <div class="mb-6">
+          <%= render @form_table %>
+        </div>
+        
+        <div class="mb-6">
+          <%= render @form_table.responses %>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <%= link_to "Back to form tables", form_tables_path, class: "rounded-lg py-2 px-4 bg-gray-100 font-medium hover:bg-gray-200" %>
+          <%= button_to "Destroy this form table", @form_table, method: :delete, class: "rounded-lg py-2 px-4 bg-red-500 text-white hover:bg-red-600" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

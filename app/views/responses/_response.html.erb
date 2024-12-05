@@ -1,0 +1,16 @@
+<div id="<%= dom_id response %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Status:</strong>
+    <%= response.status %>
+  </p>
+  <% if response.status == "pending" %>
+    <p class="my-5 text-yellow-500">
+      <strong>Processing...</strong>
+    </p>
+  <% elsif response.status == "confirmado" %>
+    <p class="my-5">
+      <strong class="block font-medium mb-1">Answer:</strong>
+      <%= response.ai_response %>
+    </p>
+  <% end %>
+</div>
