@@ -20,7 +20,7 @@ class FormTablesController < ApplicationController
   def edit
   end
 
-  # POST /form_tables or /form_tables.json
+  # POST /form_tables or /form_tables.json|
   def create
     @form_table = FormTable.new(form_table_params)
 
@@ -28,29 +28,33 @@ class FormTablesController < ApplicationController
       if @form_table.save
 
         if @form_table.processed_in_job
-          @user = User.new(user_params)
-          if @user.save
-            puts "guardado corractamente user"
-            @form_table.user = @user
-          end
-
-        # if form_table_params[:name].blank? || form_table_params[:email].blank?
-        #   # Si no se llenan los campos de nombre o correo, mostramos un error
-        #   flash[:error] = "Please provide both name and email to enqueue the form."
-        #   render :new and return
-        # else
-        #   # Aquí creamos o asociamos el usuario
-        #   @user = User.new(user_params)
+        # @user = User.new(user_params)
+        # if @user.save
+        #   puts "guardado corractamente user"
         #   @form_table.user = @user
-
-        #   puts "trabajo procesado"
-        #   puts "El trabajo está en cola ('pending')"
-        #   @response = @form_table.responses.create(
-        #     ai_response: nil, # Aquí se puede configurar como null
-        #     status: "pending"
-        #   )
-        #   # response_new = Response.create(null, ai_response: nu, status: "confirmado")
         # end
+
+        if user_params[:name].blank? || user_params[:email].blank?
+
+          # Si no se llenan los campos de nombre o correo, mostramos un error
+          flash[:error] = "Please provide both name and email to enqueue the form."
+          render :new and return
+        else
+          # Aquí creamos o asociamos el usuario
+          @user = User.new(user_params)
+          @form_table.user = @user.id
+
+          puts "trabajo procesado"
+          puts "El trabajo está en cola ('pending')"
+          @response = @form_table.responses.create(
+            form_table_id: @form_table.id,
+            ai_response: nil, # Aquí se puede configurar como null
+            status: "pending"
+          )
+          puts "aquiii"
+          SendEmailJob.perform_async(@user.name, @user.email, @response.id, @form_table.description)
+          #
+        end
 
         else
           description = @form_table.description

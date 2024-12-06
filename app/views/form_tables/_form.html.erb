@@ -1,3 +1,4 @@
+
 <%= form_with(model: form_table, class: "contents") do |form| %>
   <% if form_table.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
@@ -26,6 +27,7 @@
     <%= form.check_box  :processed_in_job, id: 'show-modal-checkbox' %>
     <%= form.label :show_modal, "Enqueue this form" %>
   </div>
+
 <%= form.fields_for :user, @user do |userInput| %>
   <div id="hidden-modal" style="display: none;">
     <%= userInput.label :name, "Additional Field 1" %>
