@@ -30,6 +30,8 @@
 
 <%= form.fields_for :user, @user do |userInput| %>
   <div id="hidden-modal" style="display: none;">
+
+    <p>Para recibir tu respuesta luego llena los siguientes datos:</p>
     <%= userInput.label :name, "Additional Field 1" %>
     <%= userInput.text_field :name %>
     

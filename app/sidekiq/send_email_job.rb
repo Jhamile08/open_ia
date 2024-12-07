@@ -6,17 +6,17 @@ class SendEmailJob
     response_update = FormService.new(user_message: description).form_question
     response_new = response.update(ai_response: response_update[:data], status: "confirmado")
     puts "este es el inspect de response new"
-    puts response_new.inspect
+    puts response.inspect
     puts "esta es la respuesta"
     puts response.inspect
 
-    if response[:success]
-
+    if response_update[:success]
       puts "Response received successfully!"
+      FormMailer.response_confirmed_email(email, name, response.ai_response).deliver_now
 
     else
       puts "malo"
+      FormMailer.response_confirmed_email(email, name, response_new)
     end
-    puts "holi #{name}"
   end
 end

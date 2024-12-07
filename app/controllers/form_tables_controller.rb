@@ -24,41 +24,48 @@ class FormTablesController < ApplicationController
   def create
     @form_table = FormTable.new(form_table_params)
 
+
     respond_to do |format|
       if @form_table.save
 
         if @form_table.processed_in_job
-        # @user = User.new(user_params)
-        # if @user.save
-        #   puts "guardado corractamente user"
-        #   @form_table.user = @user
-        # end
 
         if user_params[:name].blank? || user_params[:email].blank?
-
           # Si no se llenan los campos de nombre o correo, mostramos un error
           flash[:error] = "Please provide both name and email to enqueue the form."
           render :new and return
+
         else
           # Aquí creamos o asociamos el usuario
+
           @user = User.new(user_params)
           @form_table.user = @user.id
 
           puts "trabajo procesado"
           puts "El trabajo está en cola ('pending')"
+
+          # crear el response en pendiente
           @response = @form_table.responses.create(
             form_table_id: @form_table.id,
             ai_response: nil, # Aquí se puede configurar como null
             status: "pending"
           )
           puts "aquiii"
+
+          # llamar al sidekiq para que nos encole
           SendEmailJob.perform_async(@user.name, @user.email, @response.id, @form_table.description)
-          #
+
+          # redirigimos al show
+          format.html { redirect_to @form_table, notice: "Form table was successfully created." }
+          format.json { render :show, status: :created, location: @form_table }
+
         end
 
         else
-          description = @form_table.description
-          form(@form_table, description)
+
+          # llamamos a la funcion que nos va a traer la respuesta
+          form(@form_table, @form_table.description)
+
           format.html { redirect_to @form_table, notice: "Form table was successfully created." }
           format.json { render :show, status: :created, location: @form_table }
         end
@@ -84,16 +91,16 @@ class FormTablesController < ApplicationController
   end
 
   def form(form_table, description)
+    # llamamos al service para realizar la peticion y se crea el response con el resultado
     response = FormService.new(user_message: description).form_question
     response_new = Response.create(form_table_id: form_table.id, ai_response: response[:data], status: "confirmado")
+
     puts response_new.inspect
     puts "esta es la respuesta"
     puts response
 
-
     if response[:success]
       flash[:notice] = "Response received successfully!"
-
     else
       flash[:alert] = "Error: #{response[:error]}"
     end

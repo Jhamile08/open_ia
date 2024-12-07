@@ -79,6 +79,19 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
+  config.action_mailer.smtp_settings = {
+    user_name: ENV["SENDGRID_USERNAME"],
+    password: ENV["SENDGRID_API_KEY"],
+    domain: ENV["SENDGRID_DOMAIN"],
+    address: "smtp.sendgrid.net",
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.default_options = { from: ENV["SENDGRID_DOMAIN"] }
+# config/environments/production.rb
+config.active_job.queue_adapter = :sidekiq
+
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
