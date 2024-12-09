@@ -45,12 +45,18 @@ class FormTablesController < ApplicationController
           puts "El trabajo está en cola ('pending')"
 
           # crear el response en pendiente
-          @response = @form_table.responses.create(
+          @response = Response.create(
             form_table_id: @form_table.id,
             ai_response: nil, # Aquí se puede configurar como null
             status: "pending"
           )
           puts "aquiii"
+          puts @response.inspect
+          if @response.persisted?
+            puts "Response creado con ID: #{@response.id}"
+          else
+            puts "Error al crear Response: #{@response.errors.full_messages}"
+          end
 
           # llamar al sidekiq para que nos encole
           SendEmailJob.perform_async(@user.name, @user.email, @response.id, @form_table.description)

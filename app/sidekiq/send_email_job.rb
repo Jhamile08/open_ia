@@ -16,7 +16,7 @@ class SendEmailJob
 
     else
       puts "malo"
-      FormMailer.response_confirmed_email(email, name, response_new)
+      FormMailer.response_failled_email(email, name)
     end
   end
 end
